@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "http": {
+    "Vulnerable": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
@@ -18,13 +18,13 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "https": {
+    "Secure": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7286;http://localhost:5121",
+      "applicationUrl": "http://localhost:5122",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Secure"
       }
     },
     "IIS Express": {

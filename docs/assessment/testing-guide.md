@@ -348,10 +348,10 @@ The `userId` parameter is silently ignored. `/Profile?userId=<any-id>` always re
 
 ```bash
 # Vulnerable (default)
-dotnet run --project src/Portal.Web
+dotnet run --project src/Portal.Web --launch-profile Vulnerable
 
 # Secure
-ASPNETCORE_ENVIRONMENT=Secure dotnet run --project src/Portal.Web
+dotnet run --project src/Portal.Web --launch-profile Secure
 ```
 
 Running both modes side-by-side during a demo is the most effective way to show before/after contrast. The home dashboard clearly states which profile is active and lists all enabled vulnerabilities.

@@ -24,10 +24,10 @@ A deliberately vulnerable internal employee portal built for structured security
 **Prerequisites:** [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ```bash
-# Clone and run — no other setup needed
+# Clone and run in Vulnerable mode — no other setup needed
 git clone <repo-url>
 cd Vulnerable-Portal
-dotnet run --project src/Portal.Web
+dotnet run --project src/Portal.Web --launch-profile Vulnerable
 ```
 
 The app creates the SQLite database, runs all schema migrations, and seeds demo accounts automatically on first launch. The URL is printed in the terminal output (typically `http://localhost:5XXX`).
@@ -40,10 +40,10 @@ Toggle the `ASPNETCORE_ENVIRONMENT` variable to switch between the two profiles:
 
 ```bash
 # Vulnerable (default) — all 9 flaws active
-dotnet run --project src/Portal.Web
+dotnet run --project src/Portal.Web --launch-profile Vulnerable
 
 # Secure — all flaws remediated
-ASPNETCORE_ENVIRONMENT=Secure dotnet run --project src/Portal.Web
+dotnet run --project src/Portal.Web --launch-profile Secure
 ```
 
 A colour-coded banner at the top of every page confirms the active profile:
