@@ -1,0 +1,92 @@
+@model Portal.Web.Models.ApplicationUser
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = "Profile";
+    var isVulnerable = SecurityProfile.IsVulnerable;
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var isPeeking = isVulnerable && ViewBag.PeekedUserId != null && Model.Id != currentUserId;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-person me-2"></i>Employee Profile</h4>
+    @if (isVulnerable)
+    {
+        <span class="badge bg-danger">Sensitive Data via URL + Log Leakage — A02/A09</span>
+    }
+</div>
+
+@if (isVulnerable && isPeeking)
+{
+    <div class="alert alert-danger mb-3">
+        <h6 class="fw-bold"><i class="bi bi-bug me-2"></i>IDOR via URL Parameter exploited</h6>
+        <p class="mb-1 small">
+            You are viewing <strong>@Model.FullName</strong>'s profile by passing
+            <code>?userId=@Model.Id</code> — this works for any user ID in the system.
+        </p>
+        <p class="mb-0 small">
+            The <code>userId</code> value was also written to the application log in plaintext.
+            Check the terminal for: <code>Profile viewed: userId=@Model.Id requested by …</code>
+        </p>
+    </div>
+}
+else if (isVulnerable)
+{
+    <div class="alert alert-warning py-2 small mb-3">
+        <strong>Exploit hint:</strong> Append <code>?userId=&lt;any_id&gt;</code> to this URL to view any employee's profile.
+        Get IDs from <a href="/Admin" class="alert-link">/Admin</a> or the Employee Directory.
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body py-4">
+                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3"
+                     style="width:80px;height:80px">
+                    <i class="bi bi-person-fill text-white fs-1"></i>
+                </div>
+                <h5 class="fw-bold mb-1">@Model.FullName</h5>
+                <p class="text-muted small mb-2">@Model.Department</p>
+                @if (Model.IsHrManager)
+                {
+                    <span class="badge bg-info text-dark">HR Manager</span>
+                }
+                @if (isPeeking)
+                {
+                    <div class="mt-2"><span class="badge bg-danger">Not your account</span></div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-header">Account Details</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+
+                    <dt class="col-sm-4">Department</dt>
+                    <dd class="col-sm-8">@Model.Department</dd>
+
+                    <dt class="col-sm-4">HR Manager</dt>
+                    <dd class="col-sm-8">@(Model.IsHrManager ? "Yes" : "No")</dd>
+
+                    @if (isVulnerable)
+                    {
+                        <dt class="col-sm-4 text-danger">User ID (exposed)</dt>
+                        <dd class="col-sm-8"><code class="small">@Model.Id</code></dd>
+                    }
+                </dl>
+            </div>
+            <div class="card-footer bg-transparent">
+                @if (Model.Id == currentUserId)
+                {
+                    <a href="/Profile/Edit" class="btn btn-sm btn-dark">
+                        <i class="bi bi-pencil me-1"></i>Edit Profile
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

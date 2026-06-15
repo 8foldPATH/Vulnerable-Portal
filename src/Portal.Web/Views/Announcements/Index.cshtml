@@ -1,0 +1,52 @@
+@model IEnumerable<Portal.Web.Models.Announcement>
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = "Announcements";
+    var isVulnerable = SecurityProfile.IsVulnerable;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-megaphone me-2"></i>Announcements</h4>
+    <div class="d-flex gap-2 align-items-center">
+        @if (isVulnerable)
+        {
+            <span class="badge bg-danger">Stored XSS — A03 Injection</span>
+        }
+        <a href="/Announcements/Create" class="btn btn-sm btn-dark">
+            <i class="bi bi-plus me-1"></i>New Announcement
+        </a>
+    </div>
+</div>
+
+@if (isVulnerable)
+{
+    <div class="alert alert-danger py-2 small mb-3">
+        <strong>Vulnerability active:</strong> Announcement content is stored verbatim and rendered with <code>Html.Raw()</code>.
+        Post a payload like <code>&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code> — it will execute for every viewer.
+    </div>
+}
+
+<div class="d-flex flex-column gap-3">
+    @foreach (var a in Model)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1 fw-bold">
+                            <a href="/Announcements/Details/@a.Id" class="text-decoration-none">@a.Title</a>
+                        </h6>
+                        <small class="text-muted">
+                            Posted by @a.Author.FullName &bull; @a.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC
+                        </small>
+                    </div>
+                    <a href="/Announcements/Details/@a.Id" class="btn btn-sm btn-outline-secondary">Read</a>
+                </div>
+            </div>
+        </div>
+    }
+    @if (!Model.Any())
+    {
+        <div class="text-center text-muted py-5">No announcements yet.</div>
+    }
+</div>

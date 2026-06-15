@@ -1,0 +1,70 @@
+@model IEnumerable<Portal.Web.Models.ExpenseReport>
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = "Expense Reports";
+    var isVulnerable = SecurityProfile.IsVulnerable;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-receipt me-2"></i>Expense Reports</h4>
+    <div class="d-flex gap-2 align-items-center">
+        @if (isVulnerable)
+        {
+            <span class="badge bg-danger">IDOR — A01 Broken Access Control</span>
+        }
+        <a href="/Expenses/Create" class="btn btn-sm btn-dark">
+            <i class="bi bi-plus me-1"></i>New Claim
+        </a>
+    </div>
+</div>
+
+@if (isVulnerable)
+{
+    <div class="alert alert-danger py-2 small mb-3">
+        <strong>Vulnerability active:</strong> Navigate directly to <code>/Expenses/Details/1</code>,
+        <code>/Expenses/Details/2</code>, <code>/Expenses/Details/3</code> etc. to view any user's expenses.
+        No ownership check is performed.
+    </div>
+}
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th>#</th>
+                    <th>Employee</th>
+                    <th>Description</th>
+                    <th class="text-end">Amount</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td class="text-muted small">@r.Id</td>
+                        <td>@r.Employee.FullName</td>
+                        <td>@r.Description</td>
+                        <td class="text-end">£@r.Amount.ToString("0.00")</td>
+                        <td>
+                            <span class="status-@r.Status.ToLower()">@r.Status</span>
+                        </td>
+                        <td class="text-muted small">@r.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <a href="/Expenses/Details/@r.Id" class="btn btn-sm btn-outline-secondary">View</a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">No expense reports.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

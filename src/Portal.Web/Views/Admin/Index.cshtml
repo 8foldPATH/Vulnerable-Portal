@@ -1,0 +1,100 @@
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = "Admin Panel";
+    var users = ViewBag.Users as IEnumerable<Portal.Web.Models.ApplicationUser> ?? Enumerable.Empty<Portal.Web.Models.ApplicationUser>();
+    var pending = ViewBag.PendingExpenses as IEnumerable<Portal.Web.Models.ExpenseReport> ?? Enumerable.Empty<Portal.Web.Models.ExpenseReport>();
+    var isVulnerable = SecurityProfile.IsVulnerable;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-gear me-2"></i>Admin Panel</h4>
+    @if (isVulnerable)
+    {
+        <span class="badge bg-danger fs-6">No Auth Required — A01 Broken Access Control</span>
+    }
+</div>
+
+@if (isVulnerable)
+{
+    <div class="alert alert-danger mb-4">
+        <h6 class="alert-heading fw-bold"><i class="bi bi-unlock-fill me-2"></i>Unauthenticated access active</h6>
+        <p class="mb-1 small">This page is reachable without any login. Log out and navigate directly to <code>/Admin</code> — the full dashboard loads.</p>
+        <p class="mb-0 small">In Secure mode, <code>[Authorize(Roles = "Admin")]</code> enforces authentication and role checks — non-admins receive <strong>403 Forbidden</strong>.</p>
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-people me-2"></i>All User Accounts (@users.Count())</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>HR Manager</th>
+                            @if (isVulnerable)
+                            {
+                                <th class="text-danger small">User ID (exposed)</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in users)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@u.FullName</td>
+                                <td>@u.Email</td>
+                                <td>@u.Department</td>
+                                <td>@(u.IsHrManager ? "✓ Yes" : "—")</td>
+                                @if (isVulnerable)
+                                {
+                                    <td><code class="small text-muted">@u.Id</code></td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-clock me-2"></i>Pending Expense Reports (@pending.Count())</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Employee</th>
+                            <th>Description</th>
+                            <th class="text-end">Amount</th>
+                            <th>Submitted</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in pending)
+                        {
+                            <tr>
+                                <td class="text-muted small">@r.Id</td>
+                                <td>@r.Employee.FullName</td>
+                                <td>@r.Description</td>
+                                <td class="text-end">£@r.Amount.ToString("0.00")</td>
+                                <td class="text-muted small">@r.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td><a href="/Expenses/Details/@r.Id" class="btn btn-sm btn-outline-secondary">View</a></td>
+                            </tr>
+                        }
+                        @if (!pending.Any())
+                        {
+                            <tr><td colspan="6" class="text-center text-muted py-3">No pending reports.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

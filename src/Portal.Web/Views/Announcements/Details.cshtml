@@ -1,0 +1,42 @@
+@model Portal.Web.Models.Announcement
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = Model.Title;
+    var isVulnerable = SecurityProfile.IsVulnerable;
+}
+
+<div class="mb-3">
+    <a href="/Announcements" class="text-decoration-none text-muted small">
+        <i class="bi bi-arrow-left me-1"></i>Back to Announcements
+    </a>
+</div>
+
+@if (isVulnerable)
+{
+    <div class="alert alert-danger py-2 small mb-3">
+        <strong>Vulnerability active:</strong> Content rendered with <code>Html.Raw()</code> — any HTML/JS in the content below will execute.
+    </div>
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="mb-0 fw-bold">@Model.Title</h5>
+            <small class="text-muted">
+                By @Model.Author.FullName &bull; @Model.CreatedAt.ToString("dd MMMM yyyy, HH:mm") UTC
+            </small>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (isVulnerable)
+        {
+            @* Vulnerability #2 (Stored XSS): Html.Raw() renders content without encoding *@
+            @Html.Raw(Model.Content)
+        }
+        else
+        {
+            @* Secure: Razor's default encoding converts < > " ' to HTML entities *@
+            <p style="white-space: pre-wrap;">@Model.Content</p>
+        }
+    </div>
+</div>

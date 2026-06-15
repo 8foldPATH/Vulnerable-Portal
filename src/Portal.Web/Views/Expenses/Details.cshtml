@@ -1,0 +1,111 @@
+@model Portal.Web.Models.ExpenseReport
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = $"Expense #{Model.Id}";
+    var isVulnerable = SecurityProfile.IsVulnerable;
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var isOwner = Model.EmployeeId == currentUserId;
+}
+
+<div class="mb-3">
+    <a href="/Expenses" class="text-decoration-none text-muted small">
+        <i class="bi bi-arrow-left me-1"></i>Back to Expenses
+    </a>
+</div>
+
+@if (isVulnerable && !isOwner)
+{
+    <div class="alert alert-danger py-2 small mb-3">
+        <i class="bi bi-bug me-1"></i>
+        <strong>IDOR exploited:</strong> This expense report belongs to <strong>@Model.Employee.FullName</strong>,
+        not you. No ownership check was performed.
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-bold">Expense Report #@Model.Id</span>
+        <span class="status-@Model.Status.ToLower() fw-bold">@Model.Status</span>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Employee</dt>
+            <dd class="col-sm-9">
+                @Model.Employee.FullName
+                <span class="text-muted small">(@Model.Employee.Email)</span>
+                @if (isVulnerable && !isOwner)
+                {
+                    <span class="badge bg-danger ms-2">Not your record</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+
+            <dt class="col-sm-3">Amount</dt>
+            <dd class="col-sm-9 fw-bold">£@Model.Amount.ToString("0.00")</dd>
+
+            <dt class="col-sm-3">Submitted</dt>
+            <dd class="col-sm-9">@Model.CreatedAt.ToString("dd MMMM yyyy, HH:mm") UTC</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-semibold"><i class="bi bi-paperclip me-1"></i>Attachments</span>
+        @if (isVulnerable)
+        {
+            <span class="badge bg-warning text-dark">Insecure Upload</span>
+        }
+    </div>
+    <div class="card-body">
+        @if (isVulnerable)
+        {
+            <div class="alert alert-warning py-2 small mb-3">
+                <strong>Vulnerability active:</strong> Any file type is accepted. Files are stored with the original filename
+                and served publicly from <code>/uploads/&lt;filename&gt;</code> — no authentication required.
+                Try uploading <code>payload.html</code> or appending <code>../../appsettings.json</code> as the filename.
+            </div>
+        }
+
+        @if (Model.Attachments.Any())
+        {
+            <ul class="list-group list-group-flush mb-3">
+                @foreach (var a in Model.Attachments)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><i class="bi bi-file-earmark me-2"></i>@a.OriginalFileName</span>
+                        @if (isVulnerable)
+                        {
+                            <a href="/uploads/@a.StoredFileName" target="_blank" class="btn btn-sm btn-outline-danger">
+                                Open (public, no auth)
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="/Expenses/Download/@a.Id" class="btn btn-sm btn-outline-secondary">Download</a>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted small">No attachments yet.</p>
+        }
+
+        <form asp-action="Upload" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+            <div class="d-flex gap-2">
+                <input type="file" name="file" class="form-control form-control-sm" />
+                <button type="submit" class="btn btn-sm btn-dark text-nowrap">
+                    <i class="bi bi-upload me-1"></i>Upload
+                </button>
+            </div>
+            @if (!isVulnerable)
+            {
+                <div class="form-text">Allowed types: PDF, JPG, PNG, DOC, DOCX</div>
+            }
+        </form>
+    </div>
+</div>

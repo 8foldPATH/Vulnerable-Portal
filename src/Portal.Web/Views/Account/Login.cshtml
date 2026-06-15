@@ -1,0 +1,68 @@
+@model Portal.Web.Models.ViewModels.LoginViewModel
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white text-center py-3">
+                <i class="bi bi-building fs-3 d-block mb-1"></i>
+                <span class="fw-bold">Acme Employee Portal</span>
+            </div>
+            <div class="card-body p-4">
+                <h5 class="card-title mb-4 text-center">Sign in to your account</h5>
+
+                @if (SecurityProfile.IsVulnerable)
+                {
+                    <div class="alert alert-warning py-2 small">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        <strong>No account lockout</strong> — brute force is possible in Vulnerable mode.
+                    </div>
+                }
+
+                <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+                        @if (SecurityProfile.IsVulnerable)
+                        {
+                            <div class="small text-danger mt-1">
+                                Sets <code>RememberToken=Base64(email)</code> with <code>HttpOnly=false</code>
+                            </div>
+                        }
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100">Sign in</button>
+                </form>
+            </div>
+            <div class="card-footer bg-light text-center py-2">
+                <small class="text-muted">
+                    <strong>Demo accounts</strong><br>
+                    admin@@acme.com / Admin123!<br>
+                    employee1@@acme.com / Employee123!
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

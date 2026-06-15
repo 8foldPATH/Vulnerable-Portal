@@ -1,0 +1,66 @@
+@model Portal.Web.Models.ViewModels.AnnouncementCreateViewModel
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = "New Announcement";
+    var isVulnerable = SecurityProfile.IsVulnerable;
+}
+
+<div class="mb-3">
+    <a href="/Announcements" class="text-decoration-none text-muted small">
+        <i class="bi bi-arrow-left me-1"></i>Back to Announcements
+    </a>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0"><i class="bi bi-megaphone me-2"></i>New Announcement</h4>
+    @if (isVulnerable)
+    {
+        <span class="badge bg-danger">Stored XSS sink</span>
+    }
+</div>
+
+@if (isVulnerable)
+{
+    <div class="alert alert-warning py-2 small mb-3">
+        <strong>Exploit hint:</strong> Enter JavaScript in the Content field —
+        e.g. <code>&lt;script&gt;alert('XSS: ' + document.cookie)&lt;/script&gt;</code>
+        — and it will execute for every user who opens this announcement.
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label fw-semibold"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Content" class="form-label fw-semibold"></label>
+                <textarea asp-for="Content" class="form-control font-monospace" rows="8"></textarea>
+                <span asp-validation-for="Content" class="text-danger small"></span>
+                @if (isVulnerable)
+                {
+                    <div class="form-text text-danger">HTML and JavaScript are accepted and stored verbatim.</div>
+                }
+                else
+                {
+                    <div class="form-text">Content will be HTML-encoded before display.</div>
+                }
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-dark">Publish</button>
+                <a href="/Announcements" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,89 @@
+@model IEnumerable<Portal.Web.Models.ApplicationUser>
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = "Employee Directory";
+    var query = ViewBag.Query as string;
+    var isVulnerable = SecurityProfile.IsVulnerable;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-people me-2"></i>Employee Directory</h4>
+    @if (isVulnerable)
+    {
+        <span class="badge bg-danger">SQLi — A03 Injection</span>
+    }
+</div>
+
+@if (isVulnerable)
+{
+    <div class="alert alert-danger py-2 small mb-3">
+        <strong>Vulnerability active:</strong> The search query is concatenated directly into SQL.
+        Try: <code>' OR '1'='1</code> or <code>' UNION SELECT Id,UserName,Email,FullName,Department,0 FROM AspNetUsers--</code>
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-body py-3">
+        <form method="get" class="d-flex gap-2">
+            <input type="search" name="q" value="@query" class="form-control" placeholder="Search by name…" />
+            <button type="submit" class="btn btn-dark px-4"><i class="bi bi-search"></i></button>
+            @if (!string.IsNullOrEmpty(query))
+            {
+                <a href="/Employees" class="btn btn-outline-secondary">Clear</a>
+            }
+        </form>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(query))
+{
+    <p class="text-muted small mb-2">
+        @Model.Count() result(s) for "<strong>@query</strong>"
+        @if (isVulnerable && Model.Count() > 3)
+        {
+            <span class="text-danger fw-semibold"> — injection returned more rows than expected!</span>
+        }
+    </p>
+}
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>HR Manager</th>
+                    @if (isVulnerable)
+                    {
+                        <th class="text-danger small">User ID (leaked)</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>
+                            <a href="/Profile?userId=@user.Id" class="text-decoration-none fw-semibold">@user.FullName</a>
+                        </td>
+                        <td>@user.Email</td>
+                        <td>@user.Department</td>
+                        <td>@(user.IsHrManager ? "Yes" : "—")</td>
+                        @if (isVulnerable)
+                        {
+                            <td><code class="small text-muted">@user.Id</code></td>
+                        }
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No employees found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

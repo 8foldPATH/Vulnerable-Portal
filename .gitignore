@@ -1,0 +1,20 @@
+## .NET
+bin/
+obj/
+*.user
+.vs/
+.vscode/
+*.suo
+
+## SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+## Uploaded files (keep directory but not contents)
+src/Portal.Web/wwwroot/uploads/*
+!src/Portal.Web/wwwroot/uploads/.gitkeep
+
+## OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,76 @@
+@model Portal.Web.Models.ViewModels.ProfileEditViewModel
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = "Edit Profile";
+    var isVulnerable = SecurityProfile.IsVulnerable;
+}
+
+<div class="mb-3">
+    <a href="/Profile" class="text-decoration-none text-muted small">
+        <i class="bi bi-arrow-left me-1"></i>Back to Profile
+    </a>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-pencil me-2"></i>Edit Profile</h4>
+    @if (isVulnerable)
+    {
+        <span class="badge bg-danger">Mass Assignment — A08 Software & Data Integrity</span>
+    }
+</div>
+
+@if (isVulnerable)
+{
+    <div class="alert alert-danger mb-3">
+        <h6 class="fw-bold"><i class="bi bi-bug me-2"></i>Mass Assignment vulnerability active</h6>
+        <p class="mb-1 small">
+            The server reads <code>IsHrManager</code> directly from form data even though the field is hidden from the UI.
+            Use browser DevTools or curl to add <code>&amp;IsHrManager=true</code> to the POST body.
+        </p>
+        <p class="mb-0 small">
+            After submitting, check <a href="/Admin" class="alert-link">/Admin</a> to confirm your HR Manager status changed.
+        </p>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label fw-semibold"></label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Department" class="form-label fw-semibold"></label>
+                        <input asp-for="Department" class="form-control" />
+                        <span asp-validation-for="Department" class="text-danger small"></span>
+                    </div>
+
+                    @if (isVulnerable)
+                    {
+                        <div class="alert alert-warning py-2 small mb-3">
+                            <strong>Hidden field target:</strong> The <code>IsHrManager</code> field is not rendered here
+                            but is bound by the server. Add it to the POST body via DevTools or:
+                            <br><code>curl -X POST .../Profile/Edit -d "FullName=…&amp;Department=…&amp;IsHrManager=true&amp;__RequestVerificationToken=…"</code>
+                        </div>
+                    }
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-dark">Save Changes</button>
+                        <a href="/Profile" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

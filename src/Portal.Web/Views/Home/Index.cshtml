@@ -1,0 +1,148 @@
+@inject Portal.Web.Configuration.SecurityProfile SecurityProfile
+@{
+    ViewData["Title"] = "Dashboard";
+    var isVulnerable = SecurityProfile.IsVulnerable;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-0 fw-bold">Dashboard</h4>
+        <small class="text-muted">Welcome back, @User.Identity!.Name</small>
+    </div>
+    <span class="badge @(isVulnerable ? "bg-danger" : "bg-success") fs-6 px-3 py-2">
+        <i class="bi @(isVulnerable ? "bi-shield-exclamation" : "bi-shield-check") me-1"></i>
+        @(isVulnerable ? "Vulnerable Mode" : "Secure Mode")
+    </span>
+</div>
+
+@if (isVulnerable)
+{
+    <div class="alert alert-danger border-0 shadow-sm mb-4">
+        <h6 class="alert-heading fw-bold"><i class="bi bi-bug-fill me-2"></i>Active Vulnerabilities (9)</h6>
+        <p class="mb-2 small">This application is running with intentional security flaws for assessment practice. The following OWASP categories are exploitable:</p>
+        <div class="row g-2">
+            <div class="col-md-6">
+                <ul class="mb-0 small">
+                    <li><strong>SQLi</strong> — Employee directory search (<code>/Employees?q=</code>)</li>
+                    <li><strong>Stored XSS</strong> — Announcement details (<code>/Announcements/Details/{id}</code>)</li>
+                    <li><strong>Broken Access Control</strong> — Admin panel (<code>/Admin</code>)</li>
+                    <li><strong>IDOR</strong> — Expense reports (<code>/Expenses/Details/{id}</code>)</li>
+                    <li><strong>No Account Lockout</strong> — Login endpoint</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="mb-0 small">
+                    <li><strong>Mass Assignment</strong> — Profile edit (<code>IsHrManager</code> field)</li>
+                    <li><strong>Insecure File Upload</strong> — Expense attachments</li>
+                    <li><strong>Weak Remember-Me</strong> — Base64 email cookie</li>
+                    <li><strong>Sensitive Data via URL</strong> — Profile lookup (<code>?userId=</code>)</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-2">
+        <small>Switch to Secure mode: <code>ASPNETCORE_ENVIRONMENT=Secure dotnet run --project src/Portal.Web</code></small>
+    </div>
+}
+else
+{
+    <div class="alert alert-success border-0 shadow-sm mb-4">
+        <h6 class="alert-heading fw-bold"><i class="bi bi-shield-check-fill me-2"></i>Security Controls Active</h6>
+        <p class="mb-0 small">All vulnerabilities are remediated. Parameterised queries, output encoding, ownership checks, extension whitelisting, account lockout, and secure cookies are enforced.</p>
+    </div>
+}
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <a href="/Employees" class="text-decoration-none">
+            <div class="card h-100 @(isVulnerable ? "border-start border-danger border-3" : "")">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-people fs-3 text-primary me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Employee Directory</h6>
+                            @if (isVulnerable) { <small class="text-danger">SQLi in search</small> }
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-0">Search and view employee profiles across the organisation.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Announcements" class="text-decoration-none">
+            <div class="card h-100 @(isVulnerable ? "border-start border-danger border-3" : "")">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-megaphone fs-3 text-warning me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Announcements</h6>
+                            @if (isVulnerable) { <small class="text-danger">Stored XSS</small> }
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-0">Company-wide announcements and notices from HR and management.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Expenses" class="text-decoration-none">
+            <div class="card h-100 @(isVulnerable ? "border-start border-danger border-3" : "")">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-receipt fs-3 text-success me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Expense Reports</h6>
+                            @if (isVulnerable) { <small class="text-danger">IDOR + insecure upload</small> }
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-0">Submit and track expense claims. Attach receipts and supporting documents.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Profile" class="text-decoration-none">
+            <div class="card h-100 @(isVulnerable ? "border-start border-danger border-3" : "")">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-person fs-3 text-info me-3"></i>
+                        <div>
+                            <h6 class="mb-0">My Profile</h6>
+                            @if (isVulnerable) { <small class="text-danger">Mass assignment + data exposure</small> }
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-0">View and update your personal details, department, and role.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="/Admin" class="text-decoration-none">
+            <div class="card h-100 @(isVulnerable ? "border-start border-danger border-3" : "")">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-gear fs-3 text-danger me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Admin Panel</h6>
+                            @if (isVulnerable) { <small class="text-danger">No authentication required!</small> }
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-0">User management and pending expense approvals.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 bg-dark text-light">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-terminal fs-3 text-light me-3"></i>
+                    <h6 class="mb-0">Quick Reference</h6>
+                </div>
+                <p class="small mb-1 text-light opacity-75">Login as admin: <code class="text-warning">admin@@acme.com</code></p>
+                <p class="small mb-1 text-light opacity-75">Login as employee: <code class="text-warning">employee1@@acme.com</code></p>
+                <p class="small mb-0 text-light opacity-75">All passwords: see README</p>
+            </div>
+        </div>
+    </div>
+</div>

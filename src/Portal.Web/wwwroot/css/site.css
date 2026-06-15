@@ -1,0 +1,55 @@
+body {
+    font-size: 0.925rem;
+    background-color: #f5f6fa;
+}
+
+/* Profile banner */
+.profile-banner { letter-spacing: .03em; }
+.banner-vulnerable { background-color: #dc3545; color: #fff; }
+.banner-secure     { background-color: #198754; color: #fff; }
+
+/* Sidebar */
+.sidebar {
+    background-color: #212529;
+    min-height: calc(100vh - 80px);
+    border-right: 1px solid #343a40;
+}
+
+.sidebar-link {
+    color: #adb5bd;
+    border-radius: .375rem;
+    font-size: .875rem;
+    padding: .45rem .85rem;
+    transition: background-color .15s, color .15s;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background-color: #343a40;
+    color: #f8f9fa;
+}
+
+.admin-link { color: #ffc107 !important; }
+.admin-link:hover { background-color: #343a40 !important; }
+
+/* Cards */
+.card { border: none; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.card-header { border-bottom: 1px solid rgba(0,0,0,.08); font-weight: 600; }
+
+/* Tables */
+.table th { font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: #6c757d; }
+
+/* Vuln badge */
+.vuln-badge {
+    display: inline-block;
+    padding: .2em .55em;
+    font-size: .7rem;
+    font-weight: 700;
+    border-radius: .25rem;
+    letter-spacing: .04em;
+}
+
+/* Status colours */
+.status-pending  { color: #fd7e14; font-weight: 600; }
+.status-approved { color: #198754; font-weight: 600; }
+.status-rejected { color: #dc3545; font-weight: 600; }
