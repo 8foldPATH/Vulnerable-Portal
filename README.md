@@ -1,8 +1,6 @@
-# Dodgy Portal — Deliberately Vulnerable ASP.NET Core Employee Portal
+# Vulnerable-Portal — A deliberately vulnerable ASP.NET Core Employee Portal
 
-A deliberately vulnerable internal employee portal built for structured security assessment practice. It mirrors a realistic business intranet application and pairs each intentional flaw with an OWASP-aligned remediation, so you can demonstrate discovery, documentation, and fix validation as a portfolio piece.
-
-> **For authorised training and assessment only. Do not deploy publicly without hardening.**
+A deliberately vulnerable employee portal. This is designed to be a realistic business application to pair each intentional flaw with an OWASP-aligned remediation. This is as practice to demonstrate discovery, documentation, and fix validation.
 
 ---
 
@@ -34,7 +32,7 @@ The app creates the SQLite database, runs all schema migrations, and seeds demo 
 
 ---
 
-## Running in Secure Mode
+## To run in Secure Mode
 
 Toggle the `ASPNETCORE_ENVIRONMENT` variable to switch between the two profiles:
 
@@ -143,7 +141,7 @@ A `SecurityProfile` singleton is also injected everywhere a controller or view n
 
 ---
 
-## Assessment Workflow
+## Assessment workflow
 
 1. Read `docs/assessment/methodology.md` and define your scope.
 2. Run the app in **Vulnerable** mode; map all routes with Burp Suite or browser DevTools.
@@ -152,7 +150,7 @@ A `SecurityProfile` singleton is also injected everywhere a controller or view n
 5. Capture screenshots and Burp exports in `docs/evidence/`.
 6. Switch to **Secure** mode and retest each finding — expected result is 403/redirect/no output.
 7. Record retest outcomes in each finding file.
-8. Write an executive summary at `docs/assessment/executive-summary.md` for a hiring manager audience.
+8. Write an executive summary at `docs/assessment/executive-summary.md`.
 
 ---
 
@@ -168,11 +166,10 @@ dotnet run --project src/Portal.Web
 
 ---
 
-## Disclaimer
+## Disclaimer -- don't do anything nasty.
 
 This project contains **real, working exploits**. It is intended solely for:
 
-- Personal portfolio demonstration
 - Authorised security training in a local or isolated environment
 - Learning OWASP vulnerability classes and their remediations
 
