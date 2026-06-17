@@ -57,9 +57,9 @@ The home dashboard lists all active vulnerabilities and links to each affected f
 
 | Email | Password | Role |
 |-------|----------|------|
-| admin@acme.com | Admin123! | Admin |
-| employee1@acme.com | Employee123! | Employee |
-| employee2@acme.com | Employee123! | Employee |
+| admin@cerberus.com | Admin123! | Admin |
+| employee1@cerberus.com | Employee123! | Employee |
+| employee2@cerberus.com | Employee123! | Employee |
 
 ---
 

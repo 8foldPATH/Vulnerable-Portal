@@ -28,7 +28,7 @@ dotnet run --project src/Portal.Web --launch-profile Vulnerable
 
 **Burp Suite workflow:**
 1. Set Burp as your browser proxy (127.0.0.1:8080).
-2. Browse the app logged in as `employee1@acme.com` — let Burp build the site map.
+2. Browse the app logged in as `employee1@cerberus.com` — let Burp build the site map.
 3. Use **Repeater** to manually craft and replay modified requests.
 4. Use **Intruder** for the brute force / account lockout test (Vulnerability #5).
 5. Export each relevant request/response as evidence (right-click → Save item).

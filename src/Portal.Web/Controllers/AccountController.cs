@@ -85,11 +85,11 @@ public class AccountController : Controller
             // custom cookie in addition to the Identity session cookie.
             //
             // The token is simply the email address Base64-encoded:
-            //   Convert.ToBase64String(Encoding.UTF8.GetBytes("admin@acme.com"))
+            //   Convert.ToBase64String(Encoding.UTF8.GetBytes("admin@cerberus.com"))
             //   → "YWRtaW5AYWNtZS5jb20="
             //
             // Two problems:
-            //   1. The email is recoverable: atob("YWRtaW5AYWNtZS5jb20=") = "admin@acme.com"
+            //   1. The email is recoverable: atob("YWRtaW5AYWNtZS5jb20=") = "admin@cerberus.com"
             //   2. HttpOnly=false means JavaScript can access document.cookie,
             //      so any XSS payload on the page can steal and decode this token.
             if (_profile.IsVulnerable && model.RememberMe)
