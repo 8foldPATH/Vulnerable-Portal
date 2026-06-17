@@ -42,15 +42,15 @@ public static class SeedData
         // ----------------------------------------------------------
 
         // Admin account — can access /Admin in Secure mode
-        var admin = await CreateUser(userManager, "admin@acme.com", "Admin123!", "Alice Admin", "IT", false);
+        var admin = await CreateUser(userManager, "admin@cerberus.com", "Admin123!", "Alice Admin", "IT", false);
         if (admin != null) await userManager.AddToRoleAsync(admin, "Admin");
 
         // Employee 1 — used as the primary test account in most exercises
-        var emp1 = await CreateUser(userManager, "employee1@acme.com", "Employee123!", "Bob Builder", "Engineering", false);
+        var emp1 = await CreateUser(userManager, "employee1@cerberus.com", "Employee123!", "Bob Builder", "Engineering", false);
         if (emp1 != null) await userManager.AddToRoleAsync(emp1, "Employee");
 
         // Employee 2 — IsHrManager=true; her expense report (ID 3) is the IDOR target
-        var emp2 = await CreateUser(userManager, "employee2@acme.com", "Employee123!", "Carol Carter", "HR", true);
+        var emp2 = await CreateUser(userManager, "employee2@cerberus.com", "Employee123!", "Carol Carter", "HR", true);
         if (emp2 != null) await userManager.AddToRoleAsync(emp2, "Employee");
 
         // ----------------------------------------------------------
@@ -61,7 +61,7 @@ public static class SeedData
         if (!db.Announcements.Any())
         {
             // We need Alice's ID to set the AuthorId foreign key
-            var authorId = (await userManager.FindByEmailAsync("admin@acme.com"))!.Id;
+            var authorId = (await userManager.FindByEmailAsync("admin@cerberus.com"))!.Id;
             db.Announcements.AddRange(
                 new Announcement
                 {
@@ -96,9 +96,9 @@ public static class SeedData
         // ----------------------------------------------------------
         if (!db.ExpenseReports.Any())
         {
-            var adminUser = await userManager.FindByEmailAsync("admin@acme.com");
-            var bobUser = await userManager.FindByEmailAsync("employee1@acme.com");
-            var carolUser = await userManager.FindByEmailAsync("employee2@acme.com");
+            var adminUser = await userManager.FindByEmailAsync("admin@cerberus.com");
+            var bobUser = await userManager.FindByEmailAsync("employee1@cerberus.com");
+            var carolUser = await userManager.FindByEmailAsync("employee2@cerberus.com");
 
             if (adminUser != null && bobUser != null && carolUser != null)
             {

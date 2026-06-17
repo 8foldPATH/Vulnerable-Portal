@@ -34,7 +34,7 @@ The condition `'1'='1'` is always true, so all rows are returned regardless of t
 
 This appends a second SELECT statement that dumps a second copy of the users table. Useful for demonstrating that an attacker can extract arbitrary columns.
 
-**What to observe:** All users appear, including `admin@acme.com`, even though none of them match the injected search term.
+**What to observe:** All users appear, including `admin@cerberus.com`, even though none of them match the injected search term.
 
 ### Secure mode
 
@@ -119,14 +119,14 @@ The same URL redirects unauthenticated users to `/Account/Login`. Employees who 
 
 ### Exploit
 
-1. Log in as `employee1@acme.com`. Navigate to **My Expenses** and note the report IDs in the links (e.g. `/Expenses/Details/2`).
+1. Log in as `employee1@cerberus.com`. Navigate to **My Expenses** and note the report IDs in the links (e.g. `/Expenses/Details/2`).
 2. Manually change the ID in the URL:
    ```
    /Expenses/Details/1
    /Expenses/Details/2
    /Expenses/Details/3
    ```
-3. Report #3 belongs to Carol (`employee2@acme.com`). The page loads anyway, revealing her name, email, description, amount, and status.
+3. Report #3 belongs to Carol (`employee2@cerberus.com`). The page loads anyway, revealing her name, email, description, amount, and status.
 
 **What to observe:** The **Employee** field on the details page shows a different user's name and email. The red "Not your record" badge also appears in Vulnerable mode to confirm the IDOR.
 
@@ -154,7 +154,7 @@ TOKEN=$(curl -sc cookies.txt http://localhost:PORT/Account/Login \
 for pass in password Password1 admin Admin123 Admin123!; do
   STATUS=$(curl -sb cookies.txt -c cookies.txt -s -o /dev/null -w "%{http_code}" \
     -X POST http://localhost:PORT/Account/Login \
-    -d "Email=admin@acme.com&Password=${pass}&__RequestVerificationToken=${TOKEN}")
+    -d "Email=admin@cerberus.com&Password=${pass}&__RequestVerificationToken=${TOKEN}")
   echo "$STATUS $pass"
 done
 ```
@@ -184,7 +184,7 @@ A **302** response indicates a successful login (redirect to dashboard). A **200
 
 ### Exploit with browser DevTools (Firefox / Chrome)
 
-1. Log in as `employee1@acme.com`. Navigate to **My Profile → Edit Profile**.
+1. Log in as `employee1@cerberus.com`. Navigate to **My Profile → Edit Profile**.
 2. Fill in any valid name and department.
 3. Open **DevTools → Network tab**.
 4. Submit the form normally.
@@ -203,7 +203,7 @@ TOKEN=$(curl -sc cookies.txt http://localhost:PORT/Account/Login \
 # 2. Log in
 curl -sb cookies.txt -c cookies.txt -s -o /dev/null \
   -X POST http://localhost:PORT/Account/Login \
-  -d "Email=employee1@acme.com&Password=Employee123!&__RequestVerificationToken=${TOKEN}"
+  -d "Email=employee1@cerberus.com&Password=Employee123!&__RequestVerificationToken=${TOKEN}"
 
 # 3. Get a fresh token from the edit page
 EDIT_TOKEN=$(curl -sb cookies.txt http://localhost:PORT/Profile/Edit \
@@ -231,10 +231,10 @@ The `POST` action binds to `ProfileEditViewModel`, which exposes only `FullName`
 
 ### Exploit 1 — host a phishing page
 
-1. Create a file named `login.html` containing a fake Acme login form that POSTs credentials to an attacker-controlled server.
+1. Create a file named `login.html` containing a fake cerberus login form that POSTs credentials to an attacker-controlled server.
 2. Upload it via any expense report's attachment form.
 3. The file is immediately accessible at `/uploads/login.html` — no login required.
-4. Share the link. Victims see a convincing Acme-branded page.
+4. Share the link. Victims see a convincing cerberus-branded page.
 
 ### Exploit 2 — arbitrary file hosting
 
@@ -326,7 +326,7 @@ While the app is running, watch the terminal. Each profile request prints:
 
 ```
 info: Portal.Web.Controllers.ProfileController[0]
-      Profile viewed: userId=<uuid> requested by employee1@acme.com
+      Profile viewed: userId=<uuid> requested by employee1@cerberus.com
 ```
 
 An attacker with access to application logs can enumerate which accounts were accessed and by whom, and harvest user IDs for use in other attacks.
