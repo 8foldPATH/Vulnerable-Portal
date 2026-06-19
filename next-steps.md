@@ -137,24 +137,3 @@ For each vulnerability:
 A complete finding with all six artefacts demonstrates the full offensive + defensive cycle in a single document trail — which is unusual for a portfolio and is the main differentiator.
 
 ---
-
-## Suggested Order of Work
-
-- [ ] **1. Pen test** — work through all 9 vulnerabilities with Burp Suite, capture evidence, fill in finding templates
-- [ ] **2. Add Application Insights** — NuGet package + config in `Program.cs` (ask Claude to do this)
-- [ ] **3. Create Azure resources** — Log Analytics workspace + Sentinel + Application Insights in Azure Portal
-- [ ] **4. Re-run attacks with telemetry flowing** — repeat Burp attacks, confirm data appears in Log Analytics
-- [ ] **5. Write KQL rules** — start with brute force, then SQLi, then IDOR enumeration
-- [ ] **6. Capture Sentinel alert screenshots** — evidence of the detection working
-- [ ] **7. Add `docs/detections/` folder** — one `.kql` file per rule with explanation comments
-- [ ] **8. Retest in Secure mode** — confirm attacks fail and alerts go quiet
-- [ ] **9. Write executive summary** — one page, non-technical, for a hiring manager audience
-
----
-
-## Notes on the Environment
-
-- **Burp Suite** — use the Community Edition Intruder (slower but functional) for brute force; Repeater for manual IDOR and mass assignment
-- **Sentinel** — the free 90-day trial includes the Sentinel add-on; after that it's ~$2/GB ingested (negligible for local volumes)
-- **Microsoft Defender** — if you run the portal on a Windows VM with MDE installed, you get lower-level telemetry (process creation, file writes, network connections) on top of the application logs — useful for detecting tools like sqlmap by User-Agent or process name
-- **macOS + Defender for Endpoint** — captures endpoint events but not web-layer HTTP traffic; Application Insights is the right tool for that layer
